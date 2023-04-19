@@ -73,15 +73,22 @@ void ConsoleUI::printBooklist(const vector<Book>& booklist) {
 
 void ConsoleUI::printMenu() {
 	cout << "Comenzi disponibile:\n";
-	cout << " ----- [help]          -----\n";
-	cout << " ----- [display_books] -----\n";
-	cout << " ----- [add_book]      -----\n";
-	cout << " ----- [find_book]     -----\n"; 
-	cout << " ----- [delete_book]   -----\n";
-	cout << " ----- [update_book]   -----\n"; 
-	cout << " ----- [filter_books]  -----\n";
-	cout << " ----- [sort_books]    -----\n"; 
-	cout << " ----- [exit]          -----\n";
+	cout << " -----     [help]       -----\n";
+	cout << " ----------------------------\n";
+	cout << " ----- [display_books]  -----\n";
+	cout << " ----- [add_book]       -----\n";
+	cout << " ----- [find_book]      -----\n"; 
+	cout << " ----- [delete_book]    -----\n";
+	cout << " ----- [update_book]    -----\n"; 
+	cout << " ----- [filter_books]   -----\n";
+	cout << " ----- [sort_books]     -----\n";
+	cout << " ----------------------------\n";
+	cout << " ---  [add_to_wishlist]   ---\n";
+	cout << " - [add_random_to_wishlist] -\n";
+	cout << " ---  [display_wishlist]  ---\n";
+	cout << " ---  [clear_wishlist]    ---\n";
+	cout << " ----------------------------\n";
+	cout << " -----     [exit]       -----\n";
 }
 
 
@@ -116,6 +123,19 @@ void ConsoleUI::helpCommandsUI() {
 	else if (cmd == "sort_books") {
 		cout << "[sort_books] - Afiseaza o lista de carti sortate dupa criteriile prezentate\n";
 	}
+	else if (cmd == "add_to_wishlist") {
+		cout << "[add_to_wishlist] - Adauga o carte in wishlist-ul curent, oferind o lista de carti disponibile in biblioteca cu titlul cautat," 
+			"din care se va putea alege cartea dorita prin specificarea ISBN-ului corespunzator\n";
+	}
+	else if (cmd == "add_random_to_wishlist") {
+		cout << "[add_random_to_wishlist] - Adauga la wishlist un numar dat de carti, alese aleator din oferta curenta a bibliotecii\n";
+	}
+	else if (cmd == "display_wishlist") {
+		cout << "[display_wishlist] - Afiseaza cartile adaugate la wishlist-ul curent\n";
+	}
+	else if (cmd == "clear_wishlist") {
+		cout << "[clear_wishlist] - Goleste wishlist-ul curent\n";
+	}
 	else {
 		cout << "Comanda introdusa este invalida!\n";
 	}
@@ -134,6 +154,10 @@ void ConsoleUI::populateLibraryUI() {
 	this->bookService.storeBook(2, "The Brothers Karamazov", "Fyodor Dostoyevsky", "Tragic", "Humanitas", 1862);
 
 	cout << "-------- Librarie populata cu succes! --------\n";
+}
+
+void ConsoleUI::clear_screenUI() {
+	system("cls");
 }
 
 

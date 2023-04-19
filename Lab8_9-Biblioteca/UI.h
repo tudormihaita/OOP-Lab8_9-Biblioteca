@@ -26,7 +26,8 @@ private:
 		{"clear_wishlist", &ConsoleUI::clearWishlistUI},
 		{"add_random_to_wishlist", &ConsoleUI::addRandomToWishlistUI},
 		{"display_wishlist", &ConsoleUI::displayWishlistUI},
-		{"populate_library", &ConsoleUI::populateLibraryUI}
+		{"populate_library", &ConsoleUI::populateLibraryUI},
+		{"clear", &ConsoleUI::clear_screenUI}
 	};
 
 	const int readBookId();
@@ -42,6 +43,10 @@ private:
 	string readBookGenre();
 
 	const int readBookReleaseYear();
+
+	void populateLibraryUI();
+
+	void clear_screenUI();
 
 public:
 
@@ -76,8 +81,6 @@ public:
 	void addRandomToWishlistUI();
 
 	void displayWishlistUI();
-
-	void populateLibraryUI();
 
 	void run();
 };

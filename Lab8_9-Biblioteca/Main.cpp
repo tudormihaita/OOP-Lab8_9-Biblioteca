@@ -2,11 +2,18 @@
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
+#include <signal.h>
 #include <iostream>
 #include "Tests.h"
 #include "UI.h"
 
 using std::cout;
+
+//void clear_screen_handler(int signal) {
+//	system("cls");
+//	cout << signal;
+//}
+
 
 void run() {
 	Tests tests;
@@ -18,11 +25,12 @@ void run() {
 	ConsoleUI ui{ bookLibrary };
 
 
-	//ui.run();
+	ui.run();
 }
 
 
 int main() {
+	//signal(SIGINT, clear_screen_handler);
 	run();
 
 	_CrtDumpMemoryLeaks();

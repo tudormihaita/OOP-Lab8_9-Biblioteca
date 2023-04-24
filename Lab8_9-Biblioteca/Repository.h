@@ -2,6 +2,7 @@
 #include "Book.h"
 #include "Exceptions.h"
 #include "DynamicVectorTemplate.h"
+#include "DoublyLinkedListTemplate.h"
 #include <vector>
 #include <algorithm>
 
@@ -13,6 +14,7 @@ class BookRepository {
 private:
 	vector<Book> booklist;
 	//DynamicVector<Book> booklist;
+	//DoublyLinkedList<Book> booklist;
 
 public:
 	//Constructor default Repo

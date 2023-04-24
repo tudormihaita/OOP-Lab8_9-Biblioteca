@@ -11,8 +11,90 @@
 #include "Service.h"
 
 
+/* ----- TEMPLATE CONTAINERS TESTS ----- */
+
+template<typename TContainer>
+void addBooks(TContainer& c, int howMany) {
+	for (int i = 0; i < howMany; i++) {
+		Book b{ i, to_string(i) + "_title", to_string(i) + "_author", to_string(i) + "_genre", to_string(i) + "_publisher", 2000 + i };
+		c.push_back(b);
+	}
+}
+
+template<typename TContainer>
+void testCreateCopyAssign() {
+	TContainer c;
+	addBooks(c, 10);
+
+	assert(c.size() == 10);
+	assert(c.at(1).getTitle() == "1_title");
+
+	TContainer c1{ c };
+	assert(c1.size() == 10);
+	assert(c1.at(2).getAuthor() == "2_author");
+
+	TContainer c2;
+	c2 = c;
+	assert(c2.size() == 10);
+	assert(c2.at(3).getYear() == 2003);
+}
+
+template<typename TContainer>
+void testMoveConstrAssign() {
+	vector<TContainer> v;
+
+	v.push_back(TContainer{});
+	v.insert(v.begin(), TContainer{});
+
+	assert(v.size() == 2);
+
+	TContainer c;
+	addBooks(c, 50);
+	assert(c.size() == 50);
+	c = TContainer{};
+	assert(c.size() == 0);
+}
+
+template<typename TContainer>
+void testAddRemoveFindUpdate() {
+	TContainer c;
+
+	addBooks(c, 10);
+	Book b1 = c.at(1);
+	c.set(b1, 0);
+	assert(c.at(0) == b1);
+
+	Book b{ 12, "In Search of Lost Time", "Marcel Proust", "Drama", "Corint", 1967 };
+	c.push_back(b);
+	assert(c.size() == 11);
+	assert(c.at(10) == b);
+
+	auto bFound = c.find(c.begin(), c.end(), b);
+	assert(bFound.element() == b);
+
+	c.erase(bFound);
+	assert(c.size() == 10);
+
+	auto begin = c.begin();
+	c.erase(begin);
+	assert(c.size() == 9);
+
+	const int length = c.distance(c.begin(), c.end());
+	assert(length == c.size());
+}
+
+template<typename TContainer>
+void runAllContainerTests() {
+	testCreateCopyAssign<TContainer>();
+	testMoveConstrAssign<TContainer>();
+	testAddRemoveFindUpdate<TContainer>();
+}
+
+/*  --------------------------------------- */
+
+
 void Tests::runAllTests() {
-	std::cout << "-------------------------------------------\n";
+	std::cout << "---------------------------------------------\n";
 	std::cout << "Ruleaza teste domain...\n";
 	runDomainTests();
 	std::cout << "Teste domain trecute cu succes!\n";
@@ -26,7 +108,12 @@ void Tests::runAllTests() {
 	runServiceTests();
 	runWishlistTests();
 	std::cout << "Teste service trecute cu succes!\n";
-	std::cout << "-------------------------------------------\n";
+	std::cout << "Ruleaza teste containere template...\n";
+	runAllContainerTests<DynamicVector<Book>>();
+	runAllContainerTests<DoublyLinkedList<Book>>();
+	std::cout << "Teste containere template trecute cu succes!\n";
+	std::cout << "---------------------------------------------\n";
+
 }
 
 void Tests::runDomainTests() {

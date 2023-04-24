@@ -156,7 +156,7 @@ void ConsoleUI::populateLibraryUI() {
 	cout << "-------- Librarie populata cu succes! --------\n";
 }
 
-void ConsoleUI::clear_screenUI() {
+void ConsoleUI::clear_screenUI() noexcept {
 	system("cls");
 }
 

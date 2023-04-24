@@ -46,7 +46,7 @@ private:
 
 	void populateLibraryUI();
 
-	void clear_screenUI();
+	void clear_screenUI() noexcept;
 
 public:
 

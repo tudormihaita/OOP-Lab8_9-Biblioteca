@@ -15,11 +15,14 @@ private:
 
 public:
 
-	DynamicVector() noexcept;
+	DynamicVector();
 
 	DynamicVector(const DynamicVector& other);
 
+	DynamicVector(DynamicVector&& other) noexcept;
+
 	DynamicVector& operator=(const DynamicVector& other);
+	DynamicVector& operator=(DynamicVector&& other) noexcept;
 	TElem& operator[](int pos);
 	TElem operator[](int pos) const;
 
@@ -27,7 +30,7 @@ public:
 
 	void push_back(TElem elem);
 
-	void erase(IteratorVector<TElem>& it);
+	void erase(const IteratorVector<TElem>& it);
 
 	TElem& at(int pos) noexcept;
 
@@ -39,8 +42,8 @@ public:
 
 	IteratorVector<TElem> begin() noexcept;
 	IteratorVector<TElem> end() noexcept;
-	IteratorVector<TElem> find(IteratorVector<TElem> begin, IteratorVector<TElem> end, TElem elem);
-	int distance(IteratorVector<TElem> begin, IteratorVector<TElem> end);
+	IteratorVector<TElem> find(IteratorVector<TElem> begin, IteratorVector<TElem> end, TElem elem) noexcept;
+	int distance(IteratorVector<TElem> begin, IteratorVector<TElem> end) noexcept;
 };
 
 template<typename TElem>
@@ -67,7 +70,7 @@ public:
 
 
 template<typename TElem>
-DynamicVector<TElem>::DynamicVector() noexcept {
+DynamicVector<TElem>::DynamicVector() {
 	this->elems = new TElem[INITIAL_CAPACITY];
 	this->length = 0;
 	this->capacity = INITIAL_CAPACITY;
@@ -83,6 +86,17 @@ DynamicVector<TElem>::DynamicVector(const DynamicVector& other) {
 
 	this->length = other.length;
 	this->capacity = other.capacity;
+}
+
+template<typename TElem>
+DynamicVector<TElem>::DynamicVector(DynamicVector&& other) noexcept {
+	this->elems = other.elems;
+	this->length = other.length;
+	this->capacity = other.capacity;
+
+	other.elems = nullptr;
+	other.length = 0;
+	other.capacity = 0;
 }
 
 template<typename TElem>
@@ -105,6 +119,25 @@ DynamicVector<TElem>& DynamicVector<TElem>::operator=(const DynamicVector& other
 }
 
 template<typename TElem>
+DynamicVector<TElem>& DynamicVector<TElem>::operator=(DynamicVector&& other) noexcept {
+	if (this == &other) {
+		return *this;
+	}
+
+	delete[] this->elems;
+
+	this->elems = other.elems;
+	this->length = other.length;
+	this->capacity = other.capacity;
+
+	other.elems = nullptr;
+	other.length = 0;
+	other.capacity = 0;
+
+	return *this;
+}
+
+template<typename TElem>
 TElem& DynamicVector<TElem>::operator[](int pos) {
 	return this->elems[pos];
 }
@@ -116,7 +149,7 @@ TElem DynamicVector<TElem>::operator[](int pos) const {
 
 template<typename TElem>
 void DynamicVector<TElem>::resize() {
-	int new_capacity = this->capacity * 2;
+	const int new_capacity = this->capacity * 2;
 	TElem* new_elems = new TElem[new_capacity];
 
 	for (int i = 0; i < this->length; i++) {
@@ -143,13 +176,13 @@ void DynamicVector<TElem>::push_back(TElem elem) {
 }
 
 template<typename TElem>
-void DynamicVector<TElem>::erase(IteratorVector<TElem>& it) {
+void DynamicVector<TElem>::erase(const IteratorVector<TElem>& it) {
 	/*for (int i = pos; i < this->length - 1; i++)
 		this->elems[i] = this->elems[i + 1];
 	this->length--;*/
 
-	IteratorVector<TElem> begin = (*this);
-	int pos = distance(begin, it);
+	const IteratorVector<TElem> begin = (*this);
+	const int pos = distance(begin, it);
 
 	for (int i = pos; i < this->length - 1; i++)
 		this->elems[i] = this->elems[i + 1];
@@ -182,7 +215,7 @@ IteratorVector<TElem> DynamicVector<TElem>::end() noexcept {
 }
 
 template<typename TElem>
-IteratorVector<TElem> DynamicVector<TElem>::find(IteratorVector<TElem> begin, IteratorVector<TElem> end, TElem elem) {
+IteratorVector<TElem> DynamicVector<TElem>::find(IteratorVector<TElem> begin, IteratorVector<TElem> end, TElem elem) noexcept {
 	IteratorVector<TElem> it = begin;
 	while (it != end) {
 		if (it.element() == elem)
@@ -193,7 +226,7 @@ IteratorVector<TElem> DynamicVector<TElem>::find(IteratorVector<TElem> begin, It
 }
 
 template<typename TElem>
-int DynamicVector<TElem>::distance(IteratorVector<TElem> begin, IteratorVector<TElem> end) {
+int DynamicVector<TElem>::distance(IteratorVector<TElem> begin, IteratorVector<TElem> end) noexcept{
 	int pos = 0;
 	while (begin != end) {
 		pos++;

@@ -45,6 +45,12 @@
     <ClInclude Include="DoublyLinkedListTemplate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FileRepository.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UndoAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Book.cpp">
@@ -71,5 +77,14 @@
     <ClCompile Include="Wishlist.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FileRepository.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="books.txt" />
+    <Text Include="test_books.txt" />
+    <Text Include="test_export.txt" />
+    <Text Include="wishlist.txt" />
   </ItemGroup>
 </Project>

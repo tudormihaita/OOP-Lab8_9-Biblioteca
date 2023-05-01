@@ -76,6 +76,7 @@ void ConsoleUI::printMenu() {
 	cout << " -----     [help]       -----\n";
 	cout << " ----------------------------\n";
 	cout << " ----- [display_books]  -----\n";
+	cout << " ----- [display_report] -----\n";
 	cout << " ----- [add_book]       -----\n";
 	cout << " ----- [find_book]      -----\n"; 
 	cout << " ----- [delete_book]    -----\n";
@@ -83,9 +84,12 @@ void ConsoleUI::printMenu() {
 	cout << " ----- [filter_books]   -----\n";
 	cout << " ----- [sort_books]     -----\n";
 	cout << " ----------------------------\n";
+	cout << " -------    [undo]    -------\n";
+	cout << " ----------------------------\n";
 	cout << " ---  [add_to_wishlist]   ---\n";
 	cout << " - [add_random_to_wishlist] -\n";
 	cout << " ---  [display_wishlist]  ---\n";
+	cout << " ---  [export_wishlist]   ---\n";
 	cout << " ---  [clear_wishlist]    ---\n";
 	cout << " ----------------------------\n";
 	cout << " -----     [exit]       -----\n";
@@ -136,6 +140,15 @@ void ConsoleUI::helpCommandsUI() {
 	else if (cmd == "clear_wishlist") {
 		cout << "[clear_wishlist] - Goleste wishlist-ul curent\n";
 	}
+	else if (cmd == "export_wishlist") {
+		cout << "[export_wishlist] - Exporta wishlist-ul curent intr-un fisier cu numele introdus de la tastatura\n";
+	}
+	else if (cmd == "display_report") {
+		cout << "[display_report] - Genereaza si afiseaza o statistica a cartilor de biblioteca contorizate in functie de genul acestora\n";
+	}
+	else if (cmd == "undo") {
+		cout << "[undo] - Inverseaza efectul ultimei operatii efectuate asupra listei de carti, readucand-o la stadiul anterior\n";
+	}
 	else {
 		cout << "Comanda introdusa este invalida!\n";
 	}
@@ -156,7 +169,7 @@ void ConsoleUI::populateLibraryUI() {
 	cout << "-------- Librarie populata cu succes! --------\n";
 }
 
-void ConsoleUI::clear_screenUI() noexcept {
+void ConsoleUI::clearScreenUI() noexcept {
 	system("cls");
 }
 
@@ -432,6 +445,8 @@ void ConsoleUI::addToWishlistUI() {
 	this->bookService.addToWishlist(searchedISBN);
 	cout << " -------- Carte adaugata in wishlist cu succes! --------\n";
 
+	cout << " --- Numar de carti in wishlist-ul curent -> " << this->bookService.getWishlistSize()<< " ---\n";
+
 }
 
 void ConsoleUI::clearWishlistUI() {
@@ -453,10 +468,48 @@ void ConsoleUI::addRandomToWishlistUI() {
 		this->bookService.addRandomToWishlist(howMany);
 		cout << " -------- Wishlist cu " << howMany << " carti generat cu succes! --------\n";
 	}
+
+	cout << " --- Numar de carti in wishlist-ul curent -> " << this->bookService.getWishlistSize() << " ---\n";
+}
+
+void ConsoleUI::exportWishlistUI() {
+	string fileName;
+	cout << " -------- Export wishlist in fisier dat --------\n";
+	cout << "Introduceti numele fisierului de export: "; cin >> fileName;
+	this->bookService.exportWishlist(fileName);
+	cout << " -------- Export efectuat cu succes! --------\n";
+
+	cout << " --- Numar de carti in wishlist-ul curent -> " << this->bookService.getWishlistSize() << " ---\n";
+}
+
+void ConsoleUI::undoUI() {
+	this->bookService.undo();
+
+	cout << " -------- Undo efectuat cu succes! --------\n";
+}
+
+
+void ConsoleUI::displayBookReportUI() {
+	const unordered_map<string, BookReportDTO> bookReport = this->bookService.getBookReport();
+
+	cout << " -------- Afisare statistica carti dupa gen --------\n";
+
+	if (bookReport.empty()) {
+		cout << "Nu exista carti adaugate in biblioteca!\n";
+		return;
+	}
+
+	for (const std::pair<string, BookReportDTO>& stat : bookReport) {
+		cout << "Tipul: " << stat.first << " -> " << stat.second.getCount() << "\n";
+	}
+
+	cout << " ---------------------------------------------------\n";
 }
 
 void ConsoleUI::displayWishlistUI() {
 	const vector<Book>& wishlist = this->bookService.getWishlistBooks();
+
+
 
 	if (wishlist.size() == 0) {
 		cout << "Nu exista carti adaugate in wishlist!\n";
@@ -492,6 +545,11 @@ void ConsoleUI::run() {
 			catch (RepoException& re) {
 				cout << " -------- Eroare de repository --------\n";
 				cout << re.get_error_message();
+				cout << " --------------------------------------\n";
+			}
+			catch (UndoException& ue) {
+				cout << " ----------- Eroare de undo -----------\n";
+				cout << ue.get_error_message();
 				cout << " --------------------------------------\n";
 			}
 			catch (InvalidInputException& ie) {

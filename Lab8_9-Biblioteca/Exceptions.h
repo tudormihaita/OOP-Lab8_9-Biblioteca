@@ -42,6 +42,20 @@ public:
 
 };
 
+/*
+* Clasa de exceptii specifice UndoAction
+*/
+class UndoException {
+private:
+	const string error_msg;
+public:
+	UndoException(const string& error) : error_msg{ error } {};
+
+	string get_error_message() {
+		return this->error_msg;
+	}
+};
+
 
 class InvalidInputException {
 private:

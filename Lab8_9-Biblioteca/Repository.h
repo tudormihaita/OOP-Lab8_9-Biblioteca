@@ -13,11 +13,12 @@ using std::find_if;
 class BookRepository {
 private:
 	vector<Book> booklist;
+
 	//DynamicVector<Book> booklist;
 	//DoublyLinkedList<Book> booklist;
 
 public:
-	//Constructor default Repo
+	//Constructor Default Repo
 	BookRepository() = default;
 
 	//Constructor Repo prin copiere, sters pentru a nu permite copierea
@@ -30,7 +31,7 @@ public:
 	* @throws - RepoException daca o carte cu acelasi titlu, autor si an aparitie 
 				exista deja in lista
 	*/
-	void addBook(const Book& book);
+	virtual void addBook(const Book& book);
 
 	/*
 	* Returneaza o lista cu toate cartile
@@ -63,7 +64,7 @@ public:
 	* @return -
 	* @throws - RepoException daca nu exista cartea data in lista
 	*/
-	void deleteBook(const Book& bookToDelete);
+	virtual void deleteBook(const Book& bookToDelete);
 
 
 	/*
@@ -72,7 +73,7 @@ public:
 	* @return -
 	* @throws - RepoException daca cartea data nu exista in lista
 	*/
-	void updateBook(const Book& updatedBook);
+	virtual void updateBook(const Book& updatedBook);
 
 
 	/*
@@ -84,5 +85,5 @@ public:
 
 
 	//Destructor Repo
-	~BookRepository() = default;
+	virtual ~BookRepository() = default;
 };

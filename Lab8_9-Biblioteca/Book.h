@@ -110,10 +110,37 @@ public:
 };
 
 //Functie de comparare a titlurilor cartilor pentru sortare dupa titlu
-//bool cmpByTitle(const Book& b1, const Book& b2);
+bool cmpByTitle(const Book& b1, const Book& b2, bool reversed);
 
 //Functie de comparare a autorilor cartilor pentru sortare dupa autor
-//bool cmpByAuthor(const Book& b1, const Book& b2);
+bool cmpByAuthor(const Book& b1, const Book& b2, bool reversed);
 
 //Functie de comparare a anul aparitiei si a genului cartilor pentru sortare dupa an+gen
-//bool cmpByReleaseYearAndGenre(const Book& b1, const Book& b2);
+bool cmpByReleaseYearAndGenre(const Book& b1, const Book& b2, bool reversed);
+
+
+//Clasa de tip Data Transfer Object pentru entitati Book
+class BookReportDTO {
+private:
+	string genre;
+	int count = 0;
+
+public:
+	BookReportDTO() = default;
+
+	BookReportDTO(string genre) : genre{ genre } {
+		count = 0;
+	}
+
+	string getGenre() const noexcept {
+		return this->genre;
+	}
+
+	int getCount() const noexcept {
+		return this->count;
+	}
+
+	void setCount(int oldCount) noexcept {
+		this->count = oldCount;
+	}
+};

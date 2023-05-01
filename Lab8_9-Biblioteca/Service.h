@@ -1,14 +1,21 @@
 #pragma once
 #include "Repository.h"
+#include "FileRepository.h"
+#include "UndoAction.h"
 #include "Validator.h"
 #include "Wishlist.h"
 #include <functional>
 #include <algorithm>
+#include <memory>
+#include <unordered_map>
 
-using std::function;
 using std::copy_if;
 using std::sort;
 using std::reverse;
+using std::make_unique;
+using std::function;
+using std::unique_ptr;
+using std::unordered_map;
 
 //typedef bool (*CompareFct)(const Carte&, const Carte&, bool reversed);
 //typedef bool (*FilterFct)(const Carte&, const Carte&);
@@ -20,8 +27,10 @@ private:
 
 	Wishlist currentWishlist;
 
+	vector<unique_ptr<UndoAction>> undoActions;
+
 public:
-	//Constructor default Service
+	//Constructor Default Service
 	Library() = default;
 
 	//Constructor Service
@@ -135,7 +144,7 @@ public:
 	* @param cmp - pointer la o functie de comparare prin care se verifica indeplinirea relatiei de sortare dintre entitatile listei de carti din biblioteca
 	* @return - lista de carti sortate corespunzator
 	*/
-	vector<Book> sortBooks(function<bool(const Book& b1, const Book& b2)> cmp);
+	vector<Book> sortBooks(function<bool(const Book& b1, const Book& b2, bool reversed)> cmp, bool reversed);
 
 	/*
 	* Returneaza o lista de carti din biblioteca cu titlul cautat
@@ -173,4 +182,35 @@ public:
 	*/
 	const vector<Book>& getWishlistBooks() noexcept;
 
+	/*
+	* Returneaza numarul de carti din wishlist-ul curent
+	* @param -
+	* @return - int, dimensiunea wishlist-ului
+	*/
+	int getWishlistSize() const noexcept;
+
+	/*
+	* Creeaza un fisier de export care va contine cartile din wishlist-ul curent
+	* @param fileName - string, numele fisierului in care se va efectua exportul
+	* @return -
+	* @throws - RepoException, daca nu s-a putut deschide cu succes fisierul cu numele dat
+	*/
+	void exportWishlist(string fileName);
+
+	/*
+	* Genereaza si returneaza o statistica a cartilor din biblioteca, organizate dupa gen
+	* @param -
+	* @return - bookReport, unordered_map, cu perechi de tipul <gen, BookDTO>, unde cheia este genul cartii, iar DTO-ul pentru carti
+	*			contine genul si numarul de carti din fiecare gen existent in biblioteca
+	*/
+	unordered_map<string, BookReportDTO> getBookReport();
+
+
+	/*
+	* Inverseaza efectul ultimei operatii efectuate asupra listei de carti disponibile in bilioteca
+	* @param -
+	* @return -
+	* @throws - UndoException, daca nu exista operatii pentru care sa se efectueze undo
+	*/
+	void undo();
 };

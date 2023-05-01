@@ -1,6 +1,7 @@
 #pragma once
 #include "Book.h"
 #include "Exceptions.h"
+#include <fstream>
 #include <vector>
 #include <algorithm>
 #include <random>
@@ -11,6 +12,7 @@ using std::vector;
 class Wishlist {
 private:
 	vector<Book> wishlistBooks;
+
 public:
 
 	//Constructor Wishlist
@@ -45,4 +47,18 @@ public:
 	* @return - o lista de carti regasite in wishlist
 	*/
 	const vector<Book>& getAllWishlistBooks() noexcept;
+
+	/*
+	* 
+	*/
+	int getWishlistSize() const noexcept;
+
+	/*
+	* Exporta wishlist-ul curent intr-un fisier CSV cu un nume dat
+	* @param fileName - string, numele fisierului de export
+	* @return -
+	* @throws - RepoException daca fisierului cu numele fileName nu s-a putut deschide cu succes
+	*/
+	void exportBookWishlist(string fileName);
+
 };

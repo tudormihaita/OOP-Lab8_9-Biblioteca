@@ -1,10 +1,12 @@
 #pragma once
 #pragma warning (disable: 26823) // dereferencing null pointer
+#pragma warning (disable: 26472) // static_cast arithmetic conversion
 #include "Wishlist.h"
 
 using std::shuffle;
 using std::default_random_engine;
 using std::random_device;
+using std::ofstream;
 
 void Wishlist::addBookToWishlist(const Book& book) noexcept {
 	this->wishlistBooks.push_back(book);
@@ -18,6 +20,11 @@ const vector<Book>& Wishlist::getAllWishlistBooks() noexcept {
 	return this->wishlistBooks;
 }
 
+int Wishlist::getWishlistSize() const noexcept {
+	return static_cast<int>(this->wishlistBooks.size());
+}
+
+
 void Wishlist::addRandomBooks(vector<Book> allBooks, int howMany) {
 	if (allBooks.size() < howMany) {
 		throw RepoException("Nu exista carti suficiente disponibile in oferta, nu s-a putut crea wishlist-ul!\n");
@@ -29,4 +36,18 @@ void Wishlist::addRandomBooks(vector<Book> allBooks, int howMany) {
 			allBooks.pop_back();
 		}
 	}
+}
+
+void Wishlist::exportBookWishlist(string fileName) {
+	ofstream out(fileName, std::ios::trunc);
+	if (!out.is_open()) {
+		throw RepoException("Nu s-a putut deschide fisierul!\n");
+	}
+
+	for (const Book& book : getAllWishlistBooks()) {
+		out << book.getISBN() << ", " << book.getTitle() << ", " << book.getAuthor() << ", " << book.getGenre() << ", "
+			<< book.getPublisher() << ", " << book.getYear() << "\n";
+	}
+
+	out.close();
 }

@@ -22,7 +22,7 @@ string Validator::validateTitle(const string& title) const{
 		return "";}
 
 string Validator::validateAuthor(const string& author) const {
-	regex invalid_characters("[0-9:;'=~^!`?|/.+<>,@#&()]+");
+	regex invalid_characters("[0-9:;'=~^!`?|/+<>,@#&()]+");
 	if (author.length() < 2 || regex_search(author, invalid_characters))
 		return "Nume autor invalid, introduceti un sir de caractere valid!";
 	else

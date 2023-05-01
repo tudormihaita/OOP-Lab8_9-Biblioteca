@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <fstream>
 #include <cassert>
 #include <functional>
 #include "Tests.h"
@@ -10,6 +11,9 @@
 #include "Repository.h"
 #include "Service.h"
 
+using std::ifstream;
+using std::getline;
+using std::remove;
 
 /* ----- TEMPLATE CONTAINERS TESTS ----- */
 
@@ -37,6 +41,16 @@ void testCreateCopyAssign() {
 	c2 = c;
 	assert(c2.size() == 10);
 	assert(c2.at(3).getYear() == 2003);
+
+	c2 = c1;
+	assert(c2.size() == 10);
+
+	TContainer c3;
+	TContainer c4(c3);
+	addBooks(c3, 1);
+	TContainer c5(c3);
+
+	c3 = c3;
 }
 
 template<typename TContainer>
@@ -53,6 +67,12 @@ void testMoveConstrAssign() {
 	assert(c.size() == 50);
 	c = TContainer{};
 	assert(c.size() == 0);
+
+	TContainer c1;
+	addBooks(c1, 20);
+	assert(c1.size() == 20);
+	c = c1;
+	assert(c1.size() == 20);
 }
 
 template<typename TContainer>
@@ -104,10 +124,15 @@ void Tests::runAllTests() {
 	std::cout << "Ruleaza teste repository...\n";
 	runRepoTests();
 	std::cout << "Teste repository trecute cu succes!\n";
-	std::cout << "Ruleaza teste service si wishlist...\n";
+	std::cout << "Ruleaza teste service...\n";
 	runServiceTests();
-	runWishlistTests();
 	std::cout << "Teste service trecute cu succes!\n";
+	std::cout << "Ruleaza teste wishlist...\n";
+	runWishlistTests();
+	std::cout << "Teste wishlist trecute cu succes!\n";
+	std::cout << "Ruleaza teste undo...\n";
+	runUndoTests();
+	std::cout << "Teste undo trecute cu succes!\n";
 	std::cout << "Ruleaza teste containere template...\n";
 	runAllContainerTests<DynamicVector<Book>>();
 	runAllContainerTests<DoublyLinkedList<Book>>();
@@ -148,6 +173,15 @@ void Tests::runDomainTests() {
 
 	book.setPublisher("Art");
 	assert(book.getPublisher() == "Art");
+
+	BookReportDTO DTOBookDefault;
+	assert(DTOBookDefault.getCount() == 0);
+
+	BookReportDTO DTOBook("Fictiune");
+	DTOBook.setCount(2);
+
+	assert(DTOBook.getCount() == 2);
+	assert(DTOBook.getGenre() == "Fictiune");
 }
 
 void Tests::runValidationTests() {
@@ -234,7 +268,15 @@ void Tests::runRepoTests() {
 }
 
 void Tests::runServiceTests() {
-	BookRepository bookRepository;
+	try {
+		FileBookRepository bookRepository("");
+		assert(false);
+	}
+	catch (RepoException& re) {
+		assert(re.get_error_message() == "Nu s-a putut deschide fisierul !\n");
+	}
+
+	FileBookRepository bookRepository("test_books.txt");
 	Validator bookValidator;
 	Library bookLibrary{ bookRepository, bookValidator };
 
@@ -317,10 +359,35 @@ void Tests::runServiceTests() {
 	assert(sortedBooksByReleaseYearAndGenre.at(0).getYear() == 1862);
 	vector<Book> sortedBooksByReleaseYearAndGenreReversed = bookLibrary.sortByReleaseYearAndGenre(true);
 	assert(sortedBooksByReleaseYearAndGenreReversed.at(0).getYear() == 1926);
+
+	vector<Book> genericSortByReleaseYearAndGenre = bookLibrary.sortBooks(cmpByReleaseYearAndGenre, false);
+	assert(genericSortByReleaseYearAndGenre.at(0).getYear() == 1862);
+
+	vector<Book> genericSortByReleaseYearAndGenreReversed = bookLibrary.sortBooks(cmpByReleaseYearAndGenre, true);
+	assert(genericSortByReleaseYearAndGenreReversed.at(0).getYear() == 1926);
+
+	vector<Book> genericSortByAuthor = bookLibrary.sortBooks(cmpByAuthor, false);
+	assert(genericSortByAuthor.at(0).getAuthor() == "Dante Alighieri");
+
+	vector<Book> genericSortByAuthorReversed = bookLibrary.sortBooks(cmpByAuthor, true);
+	assert(genericSortByAuthorReversed.at(0).getAuthor() == "Victor Hugo");
+
+
+	vector<Book> genericSortByTitle = bookLibrary.sortBooks(cmpByTitle, false);
+	assert(genericSortByTitle.at(0).getTitle() == "In Search of Lost Time");
+
+	vector<Book> genericSortByTitleReversed = bookLibrary.sortBooks(cmpByTitle, true);
+	assert(genericSortByTitleReversed.at(0).getTitle() == "The Trial");
+
+	unordered_map<string, BookReportDTO> bookReport = bookLibrary.getBookReport();
+	assert(bookReport["Fictiune filosofica"].getCount() == 2);
+
+	bookRepository.clearFile();
+
 }
 
 void Tests::runWishlistTests() {
-	BookRepository bookRepository;
+	FileBookRepository bookRepository("test_books.txt");
 	Validator bookValidator;
 	Library bookService{ bookRepository, bookValidator };
 
@@ -360,6 +427,80 @@ void Tests::runWishlistTests() {
 	}
 
 	bookService.addRandomToWishlist(3);
-	assert(bookService.getWishlistBooks().size() == 3);
+	assert(bookService.getWishlistSize() == 3);
 
+	bookService.exportWishlist("test_export.txt");
+
+	ifstream fin("test_export.txt");
+
+	string line;
+	int lineNr = 0;
+	while (getline(fin, line)) {
+		if (!line.empty())
+		lineNr++;
+	}
+
+	assert(lineNr == 3);
+	fin.close();
+
+	try {
+		bookService.exportWishlist("");
+		assert(false);
+	}
+	catch (RepoException& re) {
+		assert(re.get_error_message() == "Nu s-a putut deschide fisierul!\n");
+	
+	}
+
+	bookRepository.clearFile();
+	//remove("test_export.txt");
+}
+
+void Tests::runUndoTests(){
+	FileBookRepository bookRepository("test_books.txt");
+	Validator bookValidator;
+	Library bookService{ bookRepository, bookValidator };
+
+	try {
+		bookService.undo();
+	}
+	catch (UndoException& ue) {
+		assert(ue.get_error_message() == "Nu mai exista operatii pentru care sa se efectueze undo!\n");
+	}
+
+	bookService.storeBook(23, "To Kill a Mockingbird", "Harper Lee", "Thriller", "Humanitas", 1960);
+	bookService.storeBook(17, "War and Peace", "Lev Tolstoi", "War story", "Corint", 1869);
+	assert(bookService.getSize() == 2);
+
+	bookService.undo();
+	assert(bookService.getSize() == 1);
+
+	bookService.storeBook(14, "In Search of Lost Time", "Marcel Proust", "Fictiune filosofica", "Humanitas", 1890);
+	bookService.storeBook(67, "The Trial", "Franz Kafka", "Fictiune filosofica", "Art", 1925);
+	assert(bookService.getSize() == 3);
+	bookService.removeBook("14ROIM90");
+
+	try {
+		auto foundBook = bookService.findBook("14ROIM90");
+		assert(false);
+	}
+	catch (const RepoException&){
+		assert(true);
+
+	}
+
+	assert(bookService.getSize() == 2);
+
+	bookService.undo();
+	assert(bookService.getSize() == 3);
+
+	bookService.updateBook("67ROTF25", "Roman psihologic", "Macmillan");
+	assert(bookService.findBook("67ROTF25").getGenre() == "Roman psihologic");
+	assert(bookService.findBook("67ROTF25").getPublisher() == "Macmillan");
+
+	bookService.undo();
+	assert(bookService.findBook("67ROTF25").getGenre() == "Fictiune filosofica");
+	assert(bookService.findBook("67ROTF25").getPublisher() == "Art");
+
+	bookRepository.clearFile();
 }

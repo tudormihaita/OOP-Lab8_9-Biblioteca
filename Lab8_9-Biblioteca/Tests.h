@@ -9,4 +9,5 @@ private:
 	void runRepoTests();
 	void runServiceTests();
 	void runWishlistTests();
+	void runUndoTests();
 };

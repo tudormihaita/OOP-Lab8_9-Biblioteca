@@ -55,19 +55,35 @@ void Book::setYear(const int& newReleaseYear) noexcept{
 }
 
 
-/*bool cmpByTitle(const Book& b1, const Book& b2) {
+bool cmpByTitle(const Book& b1, const Book& b2, bool reversed) {
+	if (reversed == false)
 		return b1.getTitle() < b2.getTitle();
+	else
+		return b1.getTitle() > b2.getTitle();
 }
 
-bool cmpByAuthor(const Book& b1, const Book& b2) {
-	return b1.getAuthor() < b2.getAuthor();
+bool cmpByAuthor(const Book& b1, const Book& b2, bool reversed) {
+	if (reversed == false)
+		return b1.getAuthor() < b2.getAuthor();
+	else
+		return b1.getAuthor() > b2.getAuthor();
 }
 
-bool cmpByReleaseYearAndGenre(const Book& b1, const Book& b2) {
+bool cmpByReleaseYearAndGenre(const Book& b1, const Book& b2, bool reversed) {
+	if (reversed == false) {
 		if (b1.getYear() == b2.getYear()) {
 			return b1.getGenre() < b2.getGenre();
 		}
 		else {
 			return b1.getYear() < b2.getYear();
 		}
-}*/
+	}
+	else {
+		if (b1.getYear() == b2.getYear()) {
+			return b1.getGenre() > b2.getGenre();
+		}
+		else {
+			return b1.getYear() > b2.getYear();
+		}
+	}
+}

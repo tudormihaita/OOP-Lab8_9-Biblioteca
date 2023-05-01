@@ -26,8 +26,11 @@ private:
 		{"clear_wishlist", &ConsoleUI::clearWishlistUI},
 		{"add_random_to_wishlist", &ConsoleUI::addRandomToWishlistUI},
 		{"display_wishlist", &ConsoleUI::displayWishlistUI},
+		{"export_wishlist", &ConsoleUI::exportWishlistUI},
+		{"display_report", &ConsoleUI::displayBookReportUI},
 		{"populate_library", &ConsoleUI::populateLibraryUI},
-		{"clear", &ConsoleUI::clear_screenUI}
+		{"undo", &ConsoleUI::undoUI},
+		{"clear", &ConsoleUI::clearScreenUI}
 	};
 
 	const int readBookId();
@@ -46,7 +49,7 @@ private:
 
 	void populateLibraryUI();
 
-	void clear_screenUI() noexcept;
+	void clearScreenUI() noexcept;
 
 public:
 
@@ -79,6 +82,12 @@ public:
 	void clearWishlistUI();
 
 	void addRandomToWishlistUI();
+
+	void exportWishlistUI();
+
+	void undoUI();
+
+	void displayBookReportUI();
 
 	void displayWishlistUI();
 

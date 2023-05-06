@@ -6,17 +6,11 @@
 #include <algorithm>
 
 
-int BookRepository::getSize() const noexcept {
+int MemoryBookRepository::getSize() noexcept {
 	return static_cast<int>(this->booklist.size());
 }
 
-const Book& BookRepository::findBook(const string& ISBN) {
-	/*for (const Book& _book : this->booklist) {
-		if (_book.getISBN() == ISBN) {
-			return _book;
-		}
-	}*/
-
+const Book& MemoryBookRepository::findBook(const string& ISBN) {
 	vector<Book>::iterator it = find_if(this->booklist.begin(), this->booklist.end(),
 		[=](const Book& book) {
 			return book.getISBN() == ISBN;
@@ -27,12 +21,11 @@ const Book& BookRepository::findBook(const string& ISBN) {
 		throw RepoException("Cartea cu ISBN-ul " + ISBN + " nu exista in lista!\n");
 }
 
-int BookRepository::getBookPosition(const Book& lookedUpBook) {
+int MemoryBookRepository::getBookPosition(const Book& lookedUpBook) {
 	vector<Book>::iterator it = find(this->booklist.begin(), this->booklist.end(), lookedUpBook);
 	//IteratorVector<Book> it = this->booklist.find(this->booklist.begin(), this->booklist.end(), lookedUpBook);
 
 	const int pos = static_cast<int>(distance(this->booklist.begin(), it));
-	//const int pos = this->booklist.distance(this->booklist.begin(), it);
 
 	if (it != this->booklist.end())
 		return pos;
@@ -41,8 +34,7 @@ int BookRepository::getBookPosition(const Book& lookedUpBook) {
 			+ to_string(lookedUpBook.getYear()) + " nu exista in lista!\n");}
 
 
-void BookRepository::addBook(const Book& book) {
-	//if (exists(book)) {
+void MemoryBookRepository::addBook(const Book& book) {
 	if(find_if(this->booklist.begin(), this->booklist.end(), [book](const Book& _book) noexcept {
 		return book == _book;  }) != this->booklist.end() ) {
 			throw RepoException("Cartea cu titlul " + book.getTitle() + " si autorul " + book.getAuthor() + 
@@ -52,7 +44,7 @@ void BookRepository::addBook(const Book& book) {
 	this->booklist.push_back(book);
 }
 
-const vector<Book>& BookRepository::getAllBooks() const noexcept{
+const vector<Book> MemoryBookRepository::getAllBooks() noexcept {
 	/*vector<Book> all_books;
 	for (const Book& book : this->booklist) {
 		all_books.push_back(book);
@@ -63,7 +55,7 @@ const vector<Book>& BookRepository::getAllBooks() const noexcept{
 	return this->booklist;
 }
 
-void BookRepository::deleteBook(const Book& bookToDelete) {
+void MemoryBookRepository::deleteBook(const Book& bookToDelete) {
 	try {
 		const int pos_to_delete = getBookPosition(bookToDelete);
 		this->booklist.erase(this->booklist.begin() + pos_to_delete);
@@ -79,7 +71,7 @@ void BookRepository::deleteBook(const Book& bookToDelete) {
 			+ to_string(book_to_delete.get_year()) + " nu exista in lista!\n")*/;
 }
 
-void BookRepository::updateBook(const Book& updatedBook) {
+void MemoryBookRepository::updateBook(const Book& updatedBook) {
 	try {
 		const int pos_to_update = getBookPosition(updatedBook);
 		this->booklist.at(pos_to_update) = updatedBook;

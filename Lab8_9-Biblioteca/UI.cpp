@@ -65,8 +65,9 @@ const int ConsoleUI::readBookReleaseYear(){
 
 void ConsoleUI::printBooklist(const vector<Book>& booklist) {
 	for (const auto& book : booklist) {
-		cout << "| " << book.getISBN() << " | " << book.getTitle() << " | " << book.getAuthor() << " | " <<
-			book.getGenre() << " | " << book.getPublisher() << " | " << book.getYear() << " |\n";
+		cout << book << "\n";
+		/*cout << "| " << book.getISBN() << " | " << book.getTitle() << " | " << book.getAuthor() << " | " <<
+			book.getGenre() << " | " << book.getPublisher() << " | " << book.getYear() << " |\n";*/
 	}
 }
 

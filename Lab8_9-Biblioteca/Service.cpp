@@ -11,7 +11,7 @@ void Library::storeBook(const int& id, const string& title, const string& author
 	this->undoActions.push_back(make_unique<UndoAdd>(bookRepository, book));
 }
 
-const vector<Book>& Library::getAllBooks() const noexcept{
+const vector<Book> Library::getAllBooks() const{
 	return this->bookRepository.getAllBooks();
 }
 

@@ -54,6 +54,12 @@ void Book::setYear(const int& newReleaseYear) noexcept{
 	this->year = newReleaseYear;
 }
 
+ostream& operator<<(ostream& os, const Book& b) {
+	os << "| " << b.getISBN() << " | " << b.getTitle() << " | " << b.getAuthor() << " | " <<
+		b.getGenre() << " | " << b.getPublisher() << " | " << b.getYear() << " |";
+
+	return os;
+}
 
 bool cmpByTitle(const Book& b1, const Book& b2, bool reversed) {
 	if (reversed == false)

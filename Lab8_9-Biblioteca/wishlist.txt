@@ -1,7 +1,2 @@
-17ROWL69, War and Peace, Lev Tolstoi, War story, Corint, 1869
-14ROIM90, In Search of Lost Time, Marcel Proust, Fictiune filosofica, Humanitas, 1890
-12ROTF16, The Great Gatsby, F. Scott Fitzgerald, Nuvela istorica, Macmillan, 2016
-96ROMG62, Madame Bovary, Gustave Flaubert, Tragedie, Humanitas, 1862
-6ROLV62, Les Miserables, Victor Hugo, Tragedie, Humanitas, 1862
+9ROAB22, American Psycho, Bret Easton Ellis, Horror psihologic, Picador, 2022
 3ROAG97, A Song of Ice & Fire, George R. R. Martin, Fictiune, Nemira, 1997
-67ROTF25, The Trial, Franz Kafka, Fictiune filosofica, Art, 1925

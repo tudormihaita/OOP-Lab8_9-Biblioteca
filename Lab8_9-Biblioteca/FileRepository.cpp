@@ -37,7 +37,7 @@ void FileBookRepository::loadFromFile() {
 			atr.push_back(atribute);
 		}
 
-		int id;
+		int id=-1;
 		if (isdigit(atr[0].at(0)) && isdigit(atr[0].at(1)))
 			id = stoi(atr[0].substr(0,2));
 		else
@@ -50,7 +50,7 @@ void FileBookRepository::loadFromFile() {
 		const int releaseYear = stoi(atr[5]);
 
 		const Book b{ id, title, author, genre, publisher, releaseYear };
-		BookRepository::addBook(b);
+		MemoryBookRepository::addBook(b);
 	}
 
 	fin.close();

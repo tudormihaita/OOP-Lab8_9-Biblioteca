@@ -6,7 +6,9 @@ public:
 private:
 	void runDomainTests();
 	void runValidationTests();
-	void runRepoTests();
+	void runMemoryRepoTests();
+	void runFileRepoTests();
+	void runLabRepoTests();
 	void runServiceTests();
 	void runWishlistTests();
 	void runUndoTests();

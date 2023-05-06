@@ -11,6 +11,26 @@ using std::find_if;
 
 
 class BookRepository {
+public:
+	virtual void addBook(const Book& book) = 0;
+
+	virtual const vector<Book> getAllBooks() = 0;
+
+	virtual const Book& findBook(const string& ISBN) = 0;
+
+	virtual void deleteBook(const Book& book) = 0;
+
+	virtual void updateBook(const Book& book) = 0;
+
+	virtual int getSize() = 0;
+
+	virtual ~BookRepository() = default;
+
+
+};
+
+
+class MemoryBookRepository: public BookRepository {
 private:
 	vector<Book> booklist;
 
@@ -19,10 +39,10 @@ private:
 
 public:
 	//Constructor Default Repo
-	BookRepository() = default;
+	MemoryBookRepository() = default;
 
 	//Constructor Repo prin copiere, sters pentru a nu permite copierea
-	BookRepository(const BookRepository& other) = delete;
+	MemoryBookRepository(const MemoryBookRepository& other) = delete;
 
 	/*
 	* Adauga o carte in lista
@@ -31,13 +51,13 @@ public:
 	* @throws - RepoException daca o carte cu acelasi titlu, autor si an aparitie 
 				exista deja in lista
 	*/
-	virtual void addBook(const Book& book);
+	void addBook(const Book& book) override;
 
 	/*
 	* Returneaza o lista cu toate cartile
 	* @return - lista cu carti (Booklist)
 	*/
-	const vector<Book>& getAllBooks() const noexcept;
+	const vector<Book> getAllBooks() noexcept override;
 
 
 	/*
@@ -46,7 +66,7 @@ public:
 	* @return - entitatea Book cu ISBN-ul cautat
 	* @throws - RepoException daca nu exista nicio carte cu acel ISBN
 	*/
-	const Book& findBook(const string& ISBN);
+	const Book& findBook(const string& ISBN) override;
 	
 
 	/*
@@ -64,7 +84,7 @@ public:
 	* @return -
 	* @throws - RepoException daca nu exista cartea data in lista
 	*/
-	virtual void deleteBook(const Book& bookToDelete);
+	void deleteBook(const Book& bookToDelete) override;
 
 
 	/*
@@ -73,7 +93,7 @@ public:
 	* @return -
 	* @throws - RepoException daca cartea data nu exista in lista
 	*/
-	virtual void updateBook(const Book& updatedBook);
+	void updateBook(const Book& updatedBook) override;
 
 
 	/*
@@ -81,9 +101,9 @@ public:
 	* @param -
 	* @return - int, lungimea listei de carti (Booklist size)
 	*/
-	int getSize() const noexcept;
+	int getSize() noexcept override;
 
 
 	//Destructor Repo
-	virtual ~BookRepository() = default;
+	virtual ~MemoryBookRepository() = default;
 };

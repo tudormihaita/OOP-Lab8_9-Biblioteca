@@ -1,7 +1,10 @@
 #pragma once
 #include <string>
 #include <iostream>
+#include <fstream>
 
+using std::ostream;
+using std::ofstream;
 using std::string;
 using std::to_string;
 
@@ -18,6 +21,8 @@ private:
 	int year = 0;
 	
 	static int nrEntities;
+
+	friend ostream& operator<<(ostream& os, const Book& b);
 
 public:
 
@@ -108,6 +113,9 @@ public:
 	void setYear(const int& newReleaseYear) noexcept;
 
 };
+
+//Supraincarcare operator de insertie pentru afisarea unei entitati Book cu toate atributele sale
+ostream& operator<<(ostream& os, const Book& b);
 
 //Functie de comparare a titlurilor cartilor pentru sortare dupa titlu
 bool cmpByTitle(const Book& b1, const Book& b2, bool reversed);

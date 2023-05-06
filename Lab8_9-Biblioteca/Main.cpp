@@ -14,14 +14,15 @@ void run() {
 	Tests tests;
 	tests.runAllTests();
 
-	//BookRepository bookRepository;
+	//MemoryBookRepository bookRepository;
+	//LabRepository bookRepository{ 0.5 }
 	FileBookRepository bookRepository("books.txt");
 	Validator bookValidator;
 	Library bookLibrary{ bookRepository, bookValidator };
 	ConsoleUI ui{ bookLibrary };
 
 
-	//ui.run();
+	ui.run();
 }
 
 

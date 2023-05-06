@@ -138,6 +138,7 @@
     <ClInclude Include="DynamicVectorTemplate.h" />
     <ClInclude Include="Exceptions.h" />
     <ClInclude Include="FileRepository.h" />
+    <ClInclude Include="LabRepository.h" />
     <ClInclude Include="Repository.h" />
     <ClInclude Include="Service.h" />
     <ClInclude Include="Tests.h" />
@@ -149,6 +150,7 @@
   <ItemGroup>
     <ClCompile Include="Book.cpp" />
     <ClCompile Include="FileRepository.cpp" />
+    <ClCompile Include="LabRepository.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Repository.cpp" />
     <ClCompile Include="Service.cpp" />

@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <cassert>
 #include <functional>
 #include "Tests.h"
@@ -12,6 +13,7 @@
 #include "Service.h"
 
 using std::ifstream;
+using std::stringstream;
 using std::getline;
 using std::remove;
 
@@ -122,7 +124,9 @@ void Tests::runAllTests() {
 	runValidationTests();
 	std::cout << "Teste validator trecute cu succes!\n";
 	std::cout << "Ruleaza teste repository...\n";
-	runRepoTests();
+	runMemoryRepoTests();
+	runFileRepoTests();
+	runLabRepoTests();
 	std::cout << "Teste repository trecute cu succes!\n";
 	std::cout << "Ruleaza teste service...\n";
 	runServiceTests();
@@ -143,6 +147,7 @@ void Tests::runAllTests() {
 
 void Tests::runDomainTests() {
 	Book book(9, "War and Peace", "Lev Tolstoi", "Nuvela istorica", "Humanitas", 1869);
+	
 	assert(book.getTitle() == "War and Peace");
 	assert(book.getAuthor() == "Lev Tolstoi");
 	assert(book.getGenre() == "Nuvela istorica");
@@ -150,6 +155,12 @@ void Tests::runDomainTests() {
 	assert(book.getYear() == 1869);
 	assert(book.getId() == 9);
 	assert(book.getISBN() == "9ROWL69");
+
+	stringstream sout;
+	sout << book;
+	auto display = sout.str();
+	//std::cout << display;
+	assert(display == "| 9ROWL69 | War and Peace | Lev Tolstoi | Nuvela istorica | Humanitas | 1869 |");
 
 	Book identical_book(9, "War and Peace", "Lev Tolstoi", "Fictiune", "Corint", 1869);
 	assert(book == identical_book);
@@ -205,8 +216,8 @@ void Tests::runValidationTests() {
 
 }
 
-void Tests::runRepoTests() {
-	BookRepository bookRepository;
+void Tests::runMemoryRepoTests() {
+	MemoryBookRepository bookRepository;
 	assert(bookRepository.getSize() == 0);
 	Book book1{ 9, "War and Peace", "Lev Tolstoi", "Nuvela istorica", "Corint", 1869 };
 	bookRepository.addBook(book1);
@@ -267,7 +278,7 @@ void Tests::runRepoTests() {
 	}
 }
 
-void Tests::runServiceTests() {
+void Tests::runFileRepoTests() {
 	try {
 		FileBookRepository bookRepository("");
 		assert(false);
@@ -276,6 +287,144 @@ void Tests::runServiceTests() {
 		assert(re.get_error_message() == "Nu s-a putut deschide fisierul !\n");
 	}
 
+	FileBookRepository bookRepository("test_books.txt");
+
+	assert(bookRepository.getSize() == 0);
+	Book book1{ 9, "A Song of Ice & Fire", "George R. R. Martin", "Fictiune", "Nemira", 1997 };
+	bookRepository.addBook(book1);
+	assert(bookRepository.getSize() == 1);
+
+	Book book2{ 12, "In Search of Lost Time", "Marcel Proust", "Fictiune", "Nemira", 1913 };
+	bookRepository.addBook(book2);
+	assert(bookRepository.getSize() == 2);
+
+	Book identicalBook{ 17, "A Song of Ice & Fire", "George R. R. Martin", "Fantasy", "Art", 1997 };
+	try {
+		bookRepository.addBook(identicalBook);
+		assert(false);
+	}
+	catch (RepoException& re) {
+		assert(re.get_error_message() == "Cartea cu titlul A Song of Ice & Fire si autorul George R. R. Martin aparuta in 1997 exista deja in lista!\n");
+	}
+	assert(bookRepository.getSize() == 2);
+
+	vector<Book> booklist = bookRepository.getAllBooks();
+	assert(booklist.size() == 2);
+
+	string lookedUpISBN = book1.getISBN();
+	Book lookedUpBook = bookRepository.findBook(lookedUpISBN);
+	assert(lookedUpBook == book1);
+
+	try {
+		Book missingBook = bookRepository.findBook("2ROIL15");
+		assert(false);
+	}
+	catch (RepoException& re) {
+		assert(re.get_error_message() == "Cartea cu ISBN-ul 2ROIL15 nu exista in lista!\n");
+	}
+
+	bookRepository.deleteBook(book2);
+	assert(bookRepository.getSize() == 1);
+
+	try {
+		bookRepository.deleteBook(book2);
+		assert(false);
+	}
+	catch (RepoException& re) {
+		assert(re.get_error_message() == "Cartea cu titlul In Search of Lost Time si autorul Marcel Proust aparuta in 1913 nu exista in lista!\n");
+	}
+
+	Book updatedBook{ 9, "A Song of Ice & Fire", "George R. R. Martin", "Fantasy medieval", "Litera", 1997 };
+	bookRepository.updateBook(updatedBook);
+	string updatedISBN = updatedBook.getISBN();
+	assert(bookRepository.findBook(updatedISBN).getGenre() == "Fantasy medieval");
+
+	try {
+		Book missingBook{ 23,  "To Kill a Mockingbird", "Harper Lee", "Thriller", "Art", 1960 };
+		bookRepository.updateBook(missingBook);
+		assert(false);
+	}
+	catch (RepoException& re) {
+		assert(re.get_error_message() == "Cartea cu titlul To Kill a Mockingbird si autorul Harper Lee aparuta in 1960 nu exista in lista!\n");
+	}
+
+	bookRepository.clearFile();
+}
+
+
+void Tests::runLabRepoTests() {
+	LabRepository bookRepository{ 0.0 };
+
+	assert(bookRepository.getSize() == 0);
+
+	Book book1{ 9, "War and Peace", "Lev Tolstoi", "Nuvela istorica", "Corint", 1869 };
+	bookRepository.addBook(book1);
+	assert(bookRepository.getSize() == 1);
+
+	Book book2{ 12, "In Search of Lost Time", "Marcel Proust", "Fictiune", "Nemira", 1913 };
+	bookRepository.addBook(book2);
+	assert(bookRepository.getSize() == 2);
+
+	Book identicalBook{ 65, "War and Peace", "Lev Tolstoi", "Nuvela istorica", "Macmillan", 1869 };
+	try {
+		bookRepository.addBook(identicalBook);
+		assert(false);
+	}
+	catch (RepoException& re) {
+		assert(re.get_error_message() == "Cartea cu titlul War and Peace si autorul Lev Tolstoi aparuta in 1869 exista deja in lista!\n");
+	}
+	assert(bookRepository.getSize() == 2);
+
+	vector<Book> booklist = bookRepository.getAllBooks();
+	assert(booklist.size() == 2);
+
+	string lookedUpISBN = book1.getISBN();
+	Book lookedUpBook = bookRepository.findBook(lookedUpISBN);
+	assert(lookedUpBook == book1);
+
+	try {
+		Book missingBook = bookRepository.findBook("2ROIL15");
+		assert(false);
+	}
+	catch (RepoException& re) {
+		assert(re.get_error_message() == "Cartea cu ISBN-ul 2ROIL15 nu exista in lista!\n");
+	}
+
+	bookRepository.deleteBook(book2);
+	assert(bookRepository.getSize() == 1);
+
+	try {
+		bookRepository.deleteBook(book2);
+		assert(false);
+	}
+	catch (RepoException& re) {
+		assert(re.get_error_message() == "Cartea cu titlul In Search of Lost Time si autorul Marcel Proust aparuta in 1913 nu exista in lista!\n");
+	}
+
+	Book updatedBook{ 9, "War and Peace", "Lev Tolstoi", "Poveste de razboi", "Litera", 1869 };
+	bookRepository.updateBook(updatedBook);
+	string updatedISBN = updatedBook.getISBN();
+	assert(bookRepository.findBook(updatedISBN).getGenre() == "Poveste de razboi");
+
+	try {
+		Book missingBook{ 23,  "To Kill a Mockingbird", "Harper Lee", "Thriller", "Art", 1960 };
+		bookRepository.updateBook(missingBook);
+		assert(false);
+	}
+	catch (RepoException& re) {
+		assert(re.get_error_message() == "Cartea cu titlul To Kill a Mockingbird si autorul Harper Lee aparuta in 1960 nu exista in lista!\n");
+	}
+
+	LabRepository bookRepositoryInvalid{ 1.0 };
+	try {
+		bookRepositoryInvalid.addBook(book2);
+	}
+	catch (RepoException& re) {
+		assert(re.get_error_message() == "Nu s-a putut efectua operatia!\n");
+	}
+}
+
+void Tests::runServiceTests() {
 	FileBookRepository bookRepository("test_books.txt");
 	Validator bookValidator;
 	Library bookLibrary{ bookRepository, bookValidator };

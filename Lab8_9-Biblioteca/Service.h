@@ -1,6 +1,7 @@
 #pragma once
 #include "Repository.h"
 #include "FileRepository.h"
+#include "LabRepository.h"
 #include "UndoAction.h"
 #include "Validator.h"
 #include "Wishlist.h"
@@ -22,6 +23,7 @@ using std::unordered_map;
 
 class Library {
 private:
+	//BookRepository& bookRepository;
 	BookRepository& bookRepository;
 	Validator& bookValidator;
 
@@ -57,7 +59,7 @@ public:
 	* Returneaza o lista cu toate cartile introduse in biblioteca
 	* @return - lista cu toate cartile disponibile in biblioteca
 	*/
-	const vector<Book>& getAllBooks() const noexcept;
+	const vector<Book> getAllBooks() const;
 
 
 	/*
